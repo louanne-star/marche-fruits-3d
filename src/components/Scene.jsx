@@ -4,6 +4,7 @@ import { createScene, fitCameraToBox } from '../three/createScene'
 import { loadModel, enableShadows } from '../three/loadModel'
 import { placeFruits } from '../three/placeFruits'
 import { setupInteraction } from '../three/interaction'
+import { createGrass } from '../three/grass'
 import { DECOR_MODELS } from '../data/fruitModels'
 
 /**
@@ -33,10 +34,21 @@ export default function Scene({ onSelectFruit }) {
       enableShadows(market)
       scene.add(market)
 
+      // Place en terre battue sous le marché, herbe tout autour
+      const marketBox = new THREE.Box3().setFromObject(market)
+      const marketCenter = marketBox.getCenter(new THREE.Vector3())
+      const marketSize = marketBox.getSize(new THREE.Vector3())
+      scene.add(
+        createGrass({
+          center: marketCenter,
+          radius: Math.hypot(marketSize.x, marketSize.z) / 2,
+        }),
+      )
+
       const displays = await placeFruits(scene)
       if (cancelled) return
 
-      const sceneBox = new THREE.Box3().setFromObject(market)
+      const sceneBox = marketBox.clone()
       displays.forEach((display) => sceneBox.expandByObject(display))
       fitCameraToBox(camera, controls, sceneBox)
 
