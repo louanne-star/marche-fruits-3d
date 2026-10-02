@@ -22,4 +22,5 @@ export const DECOR_MODELS = {
   marche: '/models/marche.glb',
   stand: '/models/stand.glb',
   cagette: '/models/cagette.glb',
+  nuage: '/models/nuage.glb',
 }
