@@ -1,6 +1,11 @@
 :root {
   --text: #3b2f2a;
+  --text-muted: #7a6a5f;
   --bg: #fdf6ec;
+  --card: #fffaf3;
+  --border: #ead9c2;
+  --accent: #c0392b;
+  --bar-bg: #f1e4d1;
 
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
@@ -36,6 +41,173 @@ body {
 }
 
 .scene {
+  position: relative;
   flex: 1;
   min-height: 0;
+  /* Pas de défilement de la page quand on fait tourner la caméra au doigt */
+  touch-action: none;
+}
+
+/* Étiquette au survol d'un fruit */
+.scene-tooltip {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 14px));
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Fiche fruit (modale) */
+.fiche {
+  width: min(420px, calc(100% - 32px));
+  padding: 0;
+  border: none;
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.25);
+}
+
+.fiche::backdrop {
+  background: rgb(40 30 20 / 0.35);
+}
+
+.fiche-card {
+  padding: 20px;
+}
+
+.fiche-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fiche-stall {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.fiche h2 {
+  margin: 2px 0 0;
+  font-size: 1.75rem;
+}
+
+.fiche-latin {
+  margin: 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.fiche-close {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fiche-close:hover {
+  background: var(--bar-bg);
+}
+
+.fiche-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.fiche-classification {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 16px 0;
+}
+
+/* La famille (nom souvent long) prend toute la largeur */
+.fiche-classification div:first-child {
+  grid-column: 1 / -1;
+}
+
+.fiche-classification div {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--bar-bg);
+  min-width: 0;
+}
+
+.fiche-classification dt {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.fiche-classification dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.fiche h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.fiche h3 span {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.fiche-nutrition {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.fiche-nutrition li {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr 4.5rem;
+  align-items: center;
+  gap: 10px;
+}
+
+.nutrient-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--bar-bg);
+  overflow: hidden;
+}
+
+.nutrient-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+}
+
+.nutrient-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.fiche-note {
+  margin: 12px 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }

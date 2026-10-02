@@ -48,13 +48,18 @@ export async function placeFruits(scene) {
     const single = perCrate === 1
     const fruit = normalizeModel(result.value, CRATE_SIZE * (single ? 0.7 : 0.36))
     const offsets = single ? [[0, 0]] : QUAD_OFFSETS
+    // Le groupe "fruits" est séparé de la cagette pour pouvoir le mettre en valeur au survol
+    const fruitGroup = new THREE.Group()
+    fruitGroup.position.y = FRUIT_LIFT
     offsets.forEach(([ox, oz], k) => {
       const copy = fruit.clone()
-      copy.position.set(ox * CRATE_SIZE, FRUIT_LIFT, oz * CRATE_SIZE)
+      copy.position.set(ox * CRATE_SIZE, 0, oz * CRATE_SIZE)
       // Petite rotation différente pour chaque exemplaire, plus naturel
       copy.rotation.y = (i * 1.7 + k * 2.3) % (Math.PI * 2)
-      display.add(copy)
+      fruitGroup.add(copy)
     })
+    display.add(fruitGroup)
+    display.userData.fruitGroup = fruitGroup
 
     enableShadows(display)
     scene.add(display)

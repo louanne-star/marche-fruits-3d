@@ -33,10 +33,16 @@ export function createScene(container) {
   addLights(scene)
   addGround(scene)
 
+  // Rotation libre autour du marché, avec des limites pour rester dans la scène.
+  // Les distances de zoom sont fixées dans fitCameraToBox, une fois la taille du marché connue.
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
-  // Empêche de passer sous le sol
-  controls.maxPolarAngle = Math.PI / 2.15
+  // Ni vue de dessus à la verticale, ni passage sous le sol :
+  // au plus bas, la caméra est presque à l'horizontale, à hauteur de la cible
+  controls.minPolarAngle = Math.PI / 8
+  controls.maxPolarAngle = Math.PI / 2 - 0.03
+  // Pas de déplacement latéral : la caméra tourne toujours autour du marché
+  controls.enablePan = false
 
   const onResize = () => {
     camera.aspect = container.clientWidth / container.clientHeight
@@ -46,8 +52,15 @@ export function createScene(container) {
   const resizeObserver = new ResizeObserver(onResize)
   resizeObserver.observe(container)
 
+  // Fonctions appelées à chaque image (animations), ajoutées via onFrame
+  const frameCallbacks = [updateSky]
+  const onFrame = (callback) => frameCallbacks.push(callback)
+
+  let previousTime = 0
   renderer.setAnimationLoop((time) => {
-    updateSky(time)
+    const delta = Math.min((time - previousTime) / 1000, 0.1)
+    previousTime = time
+    frameCallbacks.forEach((callback) => callback(time, delta))
     controls.update()
     renderer.render(scene, camera)
   })
@@ -60,7 +73,7 @@ export function createScene(container) {
     renderer.domElement.remove()
   }
 
-  return { scene, camera, renderer, controls, dispose }
+  return { scene, camera, renderer, controls, onFrame, dispose }
 }
 
 /**
@@ -104,8 +117,8 @@ function addGround(scene) {
 }
 
 /**
- * Cadre `box` en entier, vu de trois quarts face et légèrement en hauteur :
- * assez bas pour voir sous les auvents, assez haut pour voir tous les étals.
+ * Cadre `box` en entier, vu de trois quarts face et légèrement en hauteur,
+ * avec le ciel visible au-dessus du marché.
  */
 export function fitCameraToBox(camera, controls, box) {
   const sphere = box.getBoundingSphere(new THREE.Sphere())
@@ -116,18 +129,19 @@ export function fitCameraToBox(camera, controls, box) {
   const fovH = 2 * Math.atan(Math.tan(fovV / 2) * camera.aspect)
   const distance = sphere.radius / Math.sin(Math.min(fovV, fovH) / 2)
 
-  // On vise un peu au-dessus du centre : le marché descend dans le cadre
-  // et laisse voir le ciel et les nuages
+  // On vise à hauteur de visiteur (entre les plateaux et les auvents) :
+  // en tournant au plus bas, la caméra passe sous les auvents, au niveau des fruits.
   const target = sphere.center.clone()
-  target.y += sphere.radius * 0.25
+  target.y = box.min.y + (box.max.y - box.min.y) * 0.35
 
-  const direction = new THREE.Vector3(0.45, 0.4, 1).normalize()
+  // Vue peu plongeante : on voit le ciel et les nuages au-dessus du marché
+  const direction = new THREE.Vector3(0.45, 0.32, 1).normalize()
   // La sphère englobante est large : on se rapproche un peu pour remplir l'écran
   camera.position.copy(target).addScaledVector(direction, distance * 0.8)
   camera.updateProjectionMatrix()
 
   controls.target.copy(target)
-  controls.minDistance = sphere.radius * 0.4
+  controls.minDistance = sphere.radius * 0.3
   controls.maxDistance = distance * 1.5
   controls.update()
 }
