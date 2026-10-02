@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { createSky, SKY_HORIZON } from './sky'
+import { GRASS_COLOR } from './grass'
 
 /**
  * Crée la scène, la caméra, le rendu et les contrôles dans `container`.
@@ -107,11 +108,11 @@ function addLights(scene) {
 function addGround(scene) {
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(8, 64),
-    new THREE.MeshStandardMaterial({ color: '#eadbc0', roughness: 1 }),
+    new THREE.MeshStandardMaterial({ color: GRASS_COLOR, roughness: 1 }),
   )
   ground.rotation.x = -Math.PI / 2
-  // Légèrement sous le marché, dont la base descend à y = -0,007
-  ground.position.y = -0.008
+  // Sous le marché (base à y = -0,007) et sous la place en terre (y = -0,009)
+  ground.position.y = -0.012
   ground.receiveShadow = true
   scene.add(ground)
 }
