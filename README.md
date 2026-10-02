@@ -22,7 +22,8 @@ src/
   api/              Appels à l'API Fruityvice
   components/       Composants React (Scene, filtres, fiche fruit…)
   three/            Logique Three.js (scène, chargement des modèles, raycasting)
-  data/             fruits.json (copie locale de l'API) + correspondance fruits ↔ modèles
+  data/             fruits.json (copie locale de l'API), correspondance fruits ↔ modèles,
+                    disposition des fruits sur les étals (stalls.js)
 ```
 
 ## Données et CORS
