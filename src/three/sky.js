@@ -7,14 +7,10 @@ export const SKY_TOP = '#3f8fdb'
 export const SKY_HORIZON = '#c4e2f7'
 
 const CLOUD_COUNT = 10
-// Vitesse de rotation de la couronne de nuages (radians par seconde)
-const CLOUD_SPEED = 0.01
+const CLOUD_SPEED = 0.01 // rad/s
 
-/**
- * Ciel en dégradé + nuages (nuage.glb) qui tournent lentement autour du marché.
- * Les nuages se chargent en arrière-plan : le ciel s'affiche tout de suite.
- * `update(time)` est à appeler à chaque image (time en millisecondes).
- */
+// Ciel en dégradé + nuages qui tournent autour du marché.
+// Les nuages sont chargés après, le ciel s'affiche direct
 export function createSky() {
   const sky = new THREE.Group()
   sky.add(createDome())
@@ -35,14 +31,12 @@ async function loadClouds(clouds) {
   const material = new THREE.MeshStandardMaterial({
     color: '#ffffff',
     roughness: 1,
-    // Un peu d'émission pour que le dessous des nuages reste blanc et non gris
+    // sinon le dessous des nuages est gris
     emissive: '#ffffff',
     emissiveIntensity: 0.45,
-    // Sinon le brouillard de la scène les efface
-    fog: false,
+    fog: false, // le brouillard les faisait disparaître
   })
 
-  // Taille d'origine du modèle, pour le ramener à la taille voulue
   geometry.computeBoundingBox()
   const size = geometry.boundingBox.getSize(new THREE.Vector3())
   const baseScale = 1 / Math.max(size.x, size.y, size.z)
@@ -51,7 +45,6 @@ async function loadClouds(clouds) {
     const cloud = new THREE.Mesh(geometry, material)
     cloud.scale.setScalar(baseScale * (1.8 + Math.random() * 0.9))
     const angle = (i / CLOUD_COUNT) * Math.PI * 2 + Math.random() * 0.4
-    // Loin et assez bas pour apparaître au-dessus de l'horizon dans la vue par défaut
     const radius = 9 + Math.random() * 4
     cloud.position.set(Math.cos(angle) * radius, 1.3 + Math.random() * 1.3, Math.sin(angle) * radius)
     cloud.rotation.y = Math.random() * Math.PI * 2
@@ -59,10 +52,8 @@ async function loadClouds(clouds) {
   }
 }
 
-/**
- * nuage.glb est composé de 275 petits maillages : on les fusionne en une seule
- * géométrie centrée, sinon chaque nuage coûterait 275 appels de dessin par image.
- */
+// nuage.glb contient 275 petits meshs, on fusionne tout en une géométrie
+// (sinon 275 draw calls par nuage)
 async function loadCloudGeometry() {
   const model = await loadModel(DECOR_MODELS.nuage)
   model.updateMatrixWorld(true)
@@ -71,7 +62,7 @@ async function loadCloudGeometry() {
   model.traverse((child) => {
     if (!child.isMesh) return
     const part = child.geometry.clone().applyMatrix4(child.matrixWorld)
-    // On ne garde que ce qui sert au rendu, pour que toutes les parties soient compatibles
+    // mergeGeometries veut les mêmes attributs partout
     for (const name of Object.keys(part.attributes)) {
       if (name !== 'position' && name !== 'normal') part.deleteAttribute(name)
     }
@@ -84,7 +75,6 @@ async function loadCloudGeometry() {
   return geometry
 }
 
-/** Grande sphère vue de l'intérieur, colorée du bleu au pâle vers l'horizon. */
 function createDome() {
   const material = new THREE.ShaderMaterial({
     side: THREE.BackSide,
@@ -106,7 +96,6 @@ function createDome() {
       uniform vec3 horizon;
       varying vec3 vDirection;
       void main() {
-        // Transition douce à l'horizon, sans cassure
         float t = smoothstep(0.0, 0.45, vDirection.y);
         gl_FragColor = vec4(mix(horizon, top, t), 1.0);
         #include <colorspace_fragment>

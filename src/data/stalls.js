@@ -1,14 +1,10 @@
-// Disposition des fruits sur les étals de marche.glb.
-// Les coordonnées (x, z) sont celles du modèle du marché, chargé sans transformation.
-// Elles ont été relevées à partir de la géométrie des plateaux des étals.
-
-// Hauteur des plateaux des étals
+// Positions (x, z) des cagettes, relevées sur les plateaux dans marche.glb
 export const TABLE_HEIGHT = 0.16
 
 export const STALLS = [
   {
     name: 'Agrumes',
-    // Étal de devant (auvent rouge)
+    // devant, auvent rouge
     displays: [
       { fruit: 'Orange', x: 0.2, z: 0.71 },
       { fruit: 'Lemon', x: 0.45, z: 0.71 },
@@ -17,7 +13,7 @@ export const STALLS = [
   },
   {
     name: 'Fruits rouges',
-    // Étal du fond à gauche
+    // fond gauche
     displays: [
       { fruit: 'Strawberry', x: -0.65, z: -0.55 },
       { fruit: 'Cherry', x: -0.38, z: -0.55 },
@@ -27,7 +23,7 @@ export const STALLS = [
   },
   {
     name: 'Exotiques',
-    // Étal du fond à droite
+    // fond droite
     displays: [
       { fruit: 'Pineapple', x: 0.38, z: -0.4 },
       { fruit: 'Banana', x: 0.68, z: -0.4 },
@@ -37,7 +33,7 @@ export const STALLS = [
   },
   {
     name: 'Verger & potager',
-    // Étal de gauche
+    // gauche
     displays: [
       { fruit: 'Apple', x: -0.62, z: 0.02 },
       { fruit: 'Watermelon', x: -0.62, z: 0.2 },

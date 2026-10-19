@@ -7,13 +7,9 @@ import { setupInteraction } from '../three/interaction'
 import { createGrass } from '../three/grass'
 import { DECOR_MODELS } from '../data/fruitModels'
 
-/**
- * Scène 3D du marché. `onSelectFruit(name)` reçoit le nom d'API du fruit cliqué.
- */
 export default function Scene({ onSelectFruit }) {
   const containerRef = useRef(null)
-  // La scène n'est créée qu'une fois : on passe par une ref pour toujours
-  // appeler la dernière version du callback
+  // ref car la scène n'est créée qu'une fois (sinon on garde l'ancien callback)
   const onSelectRef = useRef(onSelectFruit)
   const [tooltip, setTooltip] = useState(null)
 
@@ -28,13 +24,12 @@ export default function Scene({ onSelectFruit }) {
     let interaction = null
 
     async function build() {
-      // Le marché est chargé sans transformation : les positions de data/stalls.js en dépendent
+      // pas de normalizeModel ici, les coordonnées de stalls.js en dépendent
       const market = await loadModel(DECOR_MODELS.marche)
       if (cancelled) return
       enableShadows(market)
       scene.add(market)
 
-      // Place en terre battue sous le marché, herbe tout autour
       const marketBox = new THREE.Box3().setFromObject(market)
       const marketCenter = marketBox.getCenter(new THREE.Vector3())
       const marketSize = marketBox.getSize(new THREE.Vector3())

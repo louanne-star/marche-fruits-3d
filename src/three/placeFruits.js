@@ -3,12 +3,10 @@ import { loadModel, normalizeModel, enableShadows } from './loadModel'
 import { FRUIT_MODELS, DECOR_MODELS } from '../data/fruitModels'
 import { STALLS, TABLE_HEIGHT } from '../data/stalls'
 
-// Plus grande dimension d'une cagette (unités du marché)
 const CRATE_SIZE = 0.15
-// Les plateaux portent des petits tas de légumes modélisés : on surélève
-// les fruits pour qu'ils passent au-dessus, cachés par les bords de la cagette.
+// les plateaux ont déjà des petits légumes modélisés, on remonte les fruits
+// pour passer au-dessus
 const FRUIT_LIFT = 0.035
-// Position des 4 exemplaires dans une cagette (fraction de CRATE_SIZE)
 const QUAD_OFFSETS = [
   [-0.23, -0.2],
   [0.23, -0.2],
@@ -16,11 +14,8 @@ const QUAD_OFFSETS = [
   [0.23, 0.2],
 ]
 
-/**
- * Charge les fruits et les pose dans des cagettes sur les étals du marché.
- * Chaque présentoir (cagette + fruits) garde le nom d'API du fruit dans userData,
- * ce qui servira à identifier le fruit cliqué.
- */
+// Pose chaque fruit dans une cagette sur son étal.
+// Le nom API du fruit est gardé dans userData pour savoir lequel est cliqué
 export async function placeFruits(scene) {
   const crate = normalizeModel(await loadModel(DECOR_MODELS.cagette), CRATE_SIZE)
 
@@ -48,13 +43,12 @@ export async function placeFruits(scene) {
     const single = perCrate === 1
     const fruit = normalizeModel(result.value, CRATE_SIZE * (single ? 0.7 : 0.36))
     const offsets = single ? [[0, 0]] : QUAD_OFFSETS
-    // Le groupe "fruits" est séparé de la cagette pour pouvoir le mettre en valeur au survol
+    // groupe à part pour pouvoir l'animer au survol sans bouger la cagette
     const fruitGroup = new THREE.Group()
     fruitGroup.position.y = FRUIT_LIFT
     offsets.forEach(([ox, oz], k) => {
       const copy = fruit.clone()
       copy.position.set(ox * CRATE_SIZE, 0, oz * CRATE_SIZE)
-      // Petite rotation différente pour chaque exemplaire, plus naturel
       copy.rotation.y = (i * 1.7 + k * 2.3) % (Math.PI * 2)
       fruitGroup.add(copy)
     })

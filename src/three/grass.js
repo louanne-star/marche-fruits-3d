@@ -5,10 +5,7 @@ export const GRASS_COLOR = '#86b552'
 const DIRT_COLOR = '#d2b98c'
 const TUFT_COLORS = ['#6fa83f', '#7fb548', '#93c456', '#a3cc5f']
 
-/**
- * Place du marché en terre battue entourée d'herbe.
- * `center` et `radius` décrivent la zone occupée par le marché (pas de touffes dedans).
- */
+// Terre battue sous le marché + touffes d'herbe autour (pas dans le rayon du marché)
 export function createGrass({ center, radius, count = 6000, outerRadius = 4.5 }) {
   const group = new THREE.Group()
   group.add(createDirtPatch(center, radius))
@@ -27,10 +24,9 @@ export function createGrass({ center, radius, count = 6000, outerRadius = 4.5 })
   const up = new THREE.Vector3(0, 1, 0)
   const color = new THREE.Color()
 
-  // Les touffes commencent un peu après le bord de la place, avec un bord irrégulier
   const innerRadius = radius * 1.02
   for (let i = 0; i < count; i++) {
-    // Répartition uniforme sur l'anneau (sqrt pour ne pas tasser au centre)
+    // sqrt sinon les touffes se tassent vers l'intérieur
     const r = Math.sqrt(
       innerRadius ** 2 + Math.random() * (outerRadius ** 2 - innerRadius ** 2),
     )
@@ -47,7 +43,7 @@ export function createGrass({ center, radius, count = 6000, outerRadius = 4.5 })
   return group
 }
 
-/** Une touffe = 3 brins fins et pointus, inclinés dans des directions différentes. */
+// 3 brins (cônes fins) un peu penchés
 function createTuftGeometry() {
   const blades = [0, 1, 2].map((i) => {
     const height = 0.045 + i * 0.01
@@ -63,7 +59,6 @@ function createTuftGeometry() {
   return geometry
 }
 
-/** Disque de terre aux bords irréguliers sous le marché. */
 function createDirtPatch(center, radius) {
   const segments = 28
   const shape = new THREE.Shape()
@@ -81,7 +76,7 @@ function createDirtPatch(center, radius) {
     new THREE.MeshStandardMaterial({
       color: DIRT_COLOR,
       roughness: 1,
-      // Évite le scintillement avec le sol juste en dessous
+      // z-fighting avec le sol
       polygonOffset: true,
       polygonOffsetFactor: -1,
       polygonOffsetUnits: -1,

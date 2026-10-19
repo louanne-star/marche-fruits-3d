@@ -1,5 +1,5 @@
-// Correspondance entre les fruits de l'API (nom anglais) et les modèles 3D de public/models/
-// perCrate : nombre d'exemplaires posés dans la cagette (1 pour les gros fruits, 4 sinon)
+// clé = nom du fruit dans l'API
+// perCrate : nb de fruits dans la cagette (1 pour les gros)
 export const FRUIT_MODELS = {
   Apple: { label: 'Pomme', model: '/models/pomme.glb', perCrate: 4 },
   Banana: { label: 'Banane', model: '/models/banane.glb', perCrate: 1 },
@@ -17,7 +17,6 @@ export const FRUIT_MODELS = {
   Tomato: { label: 'Tomate', model: '/models/tomate.glb', perCrate: 4 },
 }
 
-// Modèles de décor (pas liés à l'API)
 export const DECOR_MODELS = {
   marche: '/models/marche.glb',
   stand: '/models/stand.glb',

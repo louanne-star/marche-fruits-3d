@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { FRUIT_MODELS } from '../data/fruitModels'
 import { STALLS } from '../data/stalls'
 
-// Valeurs nutritionnelles de l'API (pour 100 g), dans l'ordre d'affichage
+// valeurs pour 100 g
 const NUTRIENTS = [
   { key: 'calories', label: 'Calories', unit: 'kcal' },
   { key: 'sugar', label: 'Sucres', unit: 'g' },
@@ -15,10 +15,7 @@ function stallOf(name) {
   return STALLS.find((stall) => stall.displays.some((display) => display.fruit === name))?.name
 }
 
-/**
- * Fiche d'un fruit : nom, classification et valeurs nutritionnelles.
- * Les barres comparent chaque valeur au maximum parmi tous les fruits de l'API.
- */
+// les barres sont relatives au max parmi tous les fruits de l'API
 export default function FicheFruit({ name, fruits, onClose }) {
   const dialogRef = useRef(null)
 
@@ -29,7 +26,7 @@ export default function FicheFruit({ name, fruits, onClose }) {
   const fruit = fruits.find((f) => f.name === name)
   const { label } = FRUIT_MODELS[name]
 
-  // Clic sur le fond assombri (en dehors de la carte) : on ferme
+  // clic sur le fond = fermer
   const onDialogClick = (event) => {
     if (event.target === dialogRef.current) dialogRef.current.close()
   }

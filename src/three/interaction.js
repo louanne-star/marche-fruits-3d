@@ -1,28 +1,20 @@
 import * as THREE from 'three'
 
-// Au-delà de ce déplacement (en pixels) entre l'appui et le relâchement,
-// on considère que l'utilisateur fait tourner la caméra, pas qu'il clique.
+// en px : au-delà c'est une rotation de caméra, pas un clic
 const CLICK_TOLERANCE = 6
 const HOVER_SCALE = 1.15
 const HOVER_LIFT = 0.012
-// Lueur chaude légère : assez visible sans délaver la couleur du fruit
 const HOVER_GLOW = new THREE.Color(0.12, 0.09, 0.04)
 
-/**
- * Survol et clic sur les présentoirs de fruits (raycasting).
- * - onHover(display | null, event) : appelé à chaque mouvement du pointeur sur la scène
- * - onSelect(display) : appelé au clic sur un fruit
- * Renvoie { update(delta), dispose() } : update anime la mise en valeur à chaque image.
- */
+// Survol + clic sur les présentoirs (raycasting)
 export function setupInteraction({ canvas, camera, displays, onHover, onSelect }) {
   const raycaster = new THREE.Raycaster()
   const pointer = new THREE.Vector2()
   let hovered = null
   let downPosition = null
 
-  // Les fruits ont leurs propres matériaux (un modèle chargé par présentoir) :
-  // on peut les faire briller sans toucher aux autres présentoirs.
-  // On garde la couleur d'émission d'origine pour y revenir après le survol.
+  // chaque présentoir a ses propres matériaux, on peut changer l'emissive sans
+  // toucher aux autres. On garde la valeur d'origine pour revenir après le survol
   displays.forEach((display) => {
     const data = display.userData
     data.highlight = 0
@@ -46,7 +38,6 @@ export function setupInteraction({ canvas, camera, displays, onHover, onSelect }
 
     const hit = raycaster.intersectObjects(displays, true)[0]
     if (!hit) return null
-    // On remonte jusqu'au présentoir qui porte les infos du fruit
     let object = hit.object
     while (object && !displays.includes(object)) object = object.parent
     return object
@@ -59,8 +50,7 @@ export function setupInteraction({ canvas, camera, displays, onHover, onSelect }
   }
 
   const onPointerMove = (event) => {
-    // Pendant une rotation de caméra, on ne change pas la mise en valeur
-    if (downPosition) return
+    if (downPosition) return // en train de tourner
     setHovered(pick(event), event)
   }
   const onPointerDown = (event) => {
@@ -84,7 +74,7 @@ export function setupInteraction({ canvas, camera, displays, onHover, onSelect }
   canvas.addEventListener('pointerup', onPointerUp)
   canvas.addEventListener('pointerleave', onPointerLeave)
 
-  // Transition douce vers l'état survolé / normal
+  // appelé à chaque frame pour l'animation du survol
   const update = (delta) => {
     for (const display of displays) {
       const target = display === hovered ? 1 : 0

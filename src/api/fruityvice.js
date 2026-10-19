@@ -1,9 +1,6 @@
 import localFruits from '../data/fruits.json'
 
-/**
- * Récupère tous les fruits depuis l'API Fruityvice (via le proxy /api).
- * Si l'API est indisponible, on retombe sur la copie locale de src/data/fruits.json.
- */
+// Passe par /api (proxy), et si l'API ne répond pas on prend fruits.json
 export async function fetchFruits() {
   try {
     const res = await fetch('/api/fruit/all')
